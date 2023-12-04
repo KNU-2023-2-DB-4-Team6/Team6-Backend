@@ -8,14 +8,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 @Repository
 @Slf4j
 public class OrderRepository {
     public void save(OrderForm orderForm) throws SQLException {
-        String sql = "insert into PORDER(ORDER_ID, PRODUCT_QUANTITY, ARRIVAL_TIME, ARRIVAL_STATE, OWNER_ID, PRODUCT_ID) " +
-                "values (?, ?, ?, ?, ?, ?)";
+        String sql = "insert into PORDER(ORDER_ID, PRODUCT_QUANTITY, ARRIVAL_TIME , ARRIVAL_STATE, STORE_ID, OWNER_ID, PRODUCT_ID) " +
+                "values (?, ?, TO_DATE(?, 'YYYY-MM-DD HH24:MI:SS'), ?, ?, ?, ?)";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -27,8 +29,9 @@ public class OrderRepository {
             pstmt.setInt(2, orderForm.getProduct_quantity());
             pstmt.setString(3, orderForm.getArrival_time());
             pstmt.setString(4, orderForm.getArrival_state());
-            pstmt.setString(5, orderForm.getOwnerId());
-            pstmt.setString(6, orderForm.getProductId());
+            pstmt.setString(5, orderForm.getStoreId());
+            pstmt.setString(6, orderForm.getOwnerId());
+            pstmt.setString(7, orderForm.getProductId());
             pstmt.executeUpdate();
             log.info("new order saved");
         } catch (SQLException e) {
@@ -62,6 +65,33 @@ public class OrderRepository {
                 orders.add(order);
             }
             return orders;
+
+        }catch (SQLException e){
+            throw e;
+        }finally {
+
+            close(con, pstmt, rs);
+        }
+    }
+
+    public ArrayList<String> findArrivalTime(String storeId, String productId) throws SQLException {
+        String sql = "select * from PORDER where STORE_ID = ? AND PRODUCT_ID = ? ORDER BY ARRIVAL_TIME";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, storeId);
+            pstmt.setString(2, productId);
+            rs = pstmt.executeQuery();
+            ArrayList<String> arrival_time = new ArrayList<>();
+            while (rs.next()) {
+                arrival_time.add(rs.getString("ARRIVAL_TIME"));
+            }
+            return arrival_time;
 
         }catch (SQLException e){
             throw e;

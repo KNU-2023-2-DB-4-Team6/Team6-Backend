@@ -1,7 +1,7 @@
 package comp322.NCVS.repository;
 
 import comp322.NCVS.connection.DBConnectionUtil;
-import comp322.NCVS.form.ProductForm;
+import comp322.NCVS.form.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 @Slf4j
 public class ProductRepository {
     public void findProductInfo(ProductForm product) throws SQLException {
-        String sql = "select * from Product where Product_Id = ?";
+        String sql = "select * from PRODUCT where PRODUCT_ID = ?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -28,6 +28,32 @@ public class ProductRepository {
                 product.setName(rs.getString("NAME"));
                 product.setPrice(rs.getInt("PRICE"));
                 product.setCategory(rs.getString("CATEGORY"));
+                product.setImage_Url(rs.getString("Image_Url"));
+            }
+        }catch (SQLException e){
+            throw e;
+        }finally {
+            close(con, pstmt, rs);
+        }
+    }
+
+    public void findTopProductInfo(TopProductForm topProduct) throws SQLException {
+        String sql = "select * from PRODUCT where PRODUCT_ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, topProduct.getProductId());
+            rs = pstmt.executeQuery();
+            if (rs.next()){
+                topProduct.setName(rs.getString("NAME"));
+                topProduct.setPrice(rs.getInt("PRICE"));
+                topProduct.setCategory(rs.getString("CATEGORY"));
+                topProduct.setImage_Url(rs.getString("Image_Url"));
             }
         }catch (SQLException e){
             throw e;
@@ -37,7 +63,7 @@ public class ProductRepository {
     }
 
     public ArrayList<String> findByKeyword(String Keyword) throws SQLException {
-        String sql = "select DISTINCT NAME from Product where NAME LIKE ?";
+        String sql = "select DISTINCT NAME from PRODUCT where NAME LIKE ?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -61,7 +87,7 @@ public class ProductRepository {
     }
 
     public String findIdByName(String Name) throws SQLException {
-        String sql = "select * from Product where NAME = ?";
+        String sql = "select * from PRODUCT where NAME = ?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -83,7 +109,78 @@ public class ProductRepository {
         }
     }
 
+    public void findInfoById(FavoriteForm favoriteForm) throws SQLException {
+        String sql = "select * from PRODUCT where PRODUCT_ID = ?";
 
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, favoriteForm.getProductId());
+            rs = pstmt.executeQuery();
+            if (rs.next()){
+                favoriteForm.setProductName(rs.getString("NAME"));
+                favoriteForm.setPrice(rs.getInt("PRICE"));
+                favoriteForm.setCategory(rs.getString("CATEGORY"));
+                favoriteForm.setImage_Url(rs.getString("Image_Url"));
+            }
+        }catch (SQLException e){
+            throw e;
+        }finally {
+            close(con, pstmt, rs);
+        }
+    }
+
+    public void findNPCImageById(OrderForm order) throws SQLException {
+        String sql = "select * from PRODUCT where PRODUCT_ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, order.getProductId());
+            rs = pstmt.executeQuery();
+            if (rs.next()){
+                order.setImage_Url(rs.getString("Image_Url"));
+                order.setProductName(rs.getString("NAME"));
+                order.setProductPrice(rs.getInt("PRICE"));
+                order.setCategory(rs.getString("CATEGORY"));
+            }
+        }catch (SQLException e){
+            throw e;
+        }finally {
+            close(con, pstmt, rs);
+        }
+    }
+
+    public int findCost(RevenueForm revenueForm) throws SQLException {
+        String sql = "select * from PRODUCT where PRODUCT_ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, revenueForm.getProductId());
+            rs = pstmt.executeQuery();
+            if (rs.next()){
+                return (rs.getInt("PRICE") * revenueForm.getQuantity());
+            }
+            return 0;
+        }catch (SQLException e){
+            throw e;
+        }finally {
+            close(con, pstmt, rs);
+        }
+    }
 
     private void close(Connection con, Statement stmt, ResultSet rs){
 

@@ -39,7 +39,7 @@ public class StoreRepository {
         }
     }
 
-    public ArrayList<String[]> findByOwnerId(String ownerId) throws SQLException {
+    public ArrayList<CVSForm> findByOwnerId(String ownerId) throws SQLException {
         String sql = "select * from STORE where OWNER_ID = ?";
 
         Connection con = null;
@@ -51,9 +51,17 @@ public class StoreRepository {
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1,ownerId);
             rs = pstmt.executeQuery();
-            ArrayList<String[]> stores = new ArrayList<>();
+            ArrayList<CVSForm> stores = new ArrayList<>();
             while (rs.next()){
-                String[] store = {rs.getString("STORE_ID"),rs.getString("NAME"),rs.getString("ADDRESS"),rs.getString("PHONENUMBER")};
+                CVSForm store = new CVSForm();
+                store.setStoreId(rs.getString("STORE_ID"));
+                store.setNAME(rs.getString("NAME"));
+                store.setAddress(rs.getString("ADDRESS"));
+                store.setPhoneNumber(rs.getString("PHONENUMBER"));
+                store.setLoc_x(rs.getDouble("LOCATION_X"));
+                store.setLoc_y(rs.getDouble("LOCATION_Y"));
+                store.setOwnerId(ownerId);
+                store.setImage_Url(rs.getString("Image_Url"));
                 stores.add(store);
             }
             return stores;
@@ -79,6 +87,7 @@ public class StoreRepository {
             rs = pstmt.executeQuery();
 
             if (rs.next()){
+                searchForm.setName(rs.getString("NAME"));
                 searchForm.setLoc_x(rs.getDouble("LOCATION_X"));
                 searchForm.setLoc_y(rs.getDouble("LOCATION_Y"));
             }
@@ -108,8 +117,33 @@ public class StoreRepository {
                 oneStoreForm.setName(rs.getString("NAME"));
                 oneStoreForm.setAddress(rs.getString("ADDRESS"));
                 oneStoreForm.setPhoneNumber(rs.getString("PHONENUMBER"));
+                oneStoreForm.setImage_Url(rs.getString("Image_Url"));
             }
             return oneStoreForm;
+        }catch (SQLException e){
+            throw e;
+        }finally {
+
+            close(con, pstmt, rs);
+        }
+    }
+
+    public void findNameById(FavoriteForm favoriteForm) throws SQLException {
+        String sql = "select * from STORE where STORE_ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, favoriteForm.getStoreId());
+            rs = pstmt.executeQuery();
+            OneStoreForm oneStoreForm = new OneStoreForm();
+            if (rs.next()){
+                favoriteForm.setStoreName(rs.getString("NAME"));
+            }
         }catch (SQLException e){
             throw e;
         }finally {
@@ -146,7 +180,7 @@ public class StoreRepository {
     }
 
     public void delete(String storeId) throws SQLException {
-        String sql = "delete from STORE where STORE_ID = ?";
+        String sql = "delete from STORE where STORE_ID = ? CASCADE";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -156,7 +190,6 @@ public class StoreRepository {
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, storeId);
             pstmt.executeUpdate();
-            log.info("delete favorite");
         } catch (SQLException e) {
             throw e;
         }finally {

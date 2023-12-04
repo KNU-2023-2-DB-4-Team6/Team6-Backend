@@ -19,6 +19,7 @@ import java.util.Date;
 public class MainPageService {
     private final StoreRepository storeRepository;
     private final EventRepository eventRepository;
+
     public ArrayList<AllStoreForm> allStore() throws SQLException {
         return storeRepository.findAllStore();
     }

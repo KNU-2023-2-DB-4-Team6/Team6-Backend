@@ -6,10 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 @Repository
 @Slf4j
@@ -33,6 +30,7 @@ public class EventRepository {
                 event.setPolicy(rs.getString("POLICY"));
                 event.setStart(rs.getString("ESTART"));
                 event.setEnd(rs.getString("EEND"));
+                event.setImage_Url(rs.getString("Image_Url"));
                 events.add(event);
             }
             return events;
@@ -44,6 +42,36 @@ public class EventRepository {
         }
     }
 
+    public AllEventForm findById(String eventId) throws SQLException {
+        String sql = "select * from EVENT where EVENT_ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, eventId);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()){
+                AllEventForm event = new AllEventForm();
+                event.setEventName(rs.getString("NAME"));
+                event.setPolicy(rs.getString("POLICY"));
+                event.setStart(rs.getString("ESTART"));
+                event.setEnd(rs.getString("EEND"));
+                event.setImage_Url(rs.getString("Image_Url"));
+                return event;
+            }
+            return null;
+        }catch (SQLException e){
+            throw e;
+        }finally {
+
+            close(con, pstmt, rs);
+        }
+    }
 
     private void close(Connection con, Statement stmt, ResultSet rs){
 

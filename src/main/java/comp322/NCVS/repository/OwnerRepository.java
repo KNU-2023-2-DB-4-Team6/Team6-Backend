@@ -10,7 +10,7 @@ import java.sql.*;
 @Slf4j
 public class OwnerRepository {
     public String save(String Owner_Id, String id, String password) throws SQLException {
-        String sql = "insert into OWNER(Owner_Id, id, password) values (?, ?, ?)";
+        String sql = "insert into OWNER(OWNER_ID, ID, PASSWORD) values (?, ?, ?)";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -32,7 +32,7 @@ public class OwnerRepository {
     }
 
     public String findPasswordById(String id) throws SQLException {
-        String sql = "select * from Owner where id = ?";
+        String sql = "select * from OWNER where ID = ?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -44,7 +44,32 @@ public class OwnerRepository {
             pstmt.setString(1, id);
             rs = pstmt.executeQuery();
             if (rs.next()){
-                return rs.getString("password");
+                return rs.getString("PASSWORD");
+            }else{
+                return null;
+            }
+        }catch (SQLException e){
+            throw e;
+        }finally {
+
+            close(con, pstmt, rs);
+        }
+    }
+
+    public String findKeyIdById(String id) throws SQLException {
+        String sql = "select * from OWNER where ID = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, id);
+            rs = pstmt.executeQuery();
+            if (rs.next()){
+                return rs.getString("OWNER_ID");
             }else{
                 return null;
             }

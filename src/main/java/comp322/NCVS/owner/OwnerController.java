@@ -3,7 +3,9 @@ package comp322.NCVS.owner;
 import comp322.NCVS.form.CVSForm;
 import comp322.NCVS.form.LoginForm;
 import comp322.NCVS.form.OrderForm;
+import comp322.NCVS.form.TopProductForm;
 import comp322.NCVS.login.LoginService;
+import comp322.NCVS.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +20,7 @@ public class OwnerController {
     private final OwnerService ownerService;
 
     @GetMapping("/myCVS")
-    public ArrayList<String[]> myCVS(@RequestParam("ownerId") String ownerId) throws SQLException {
+    public ArrayList<CVSForm> myCVS(@RequestParam("ownerId") String ownerId) throws SQLException {
         return ownerService.myCVS(ownerId);
     }
 
@@ -38,7 +40,12 @@ public class OwnerController {
     }
 
     @GetMapping("/myCVS/order")
-    public ArrayList<OrderForm> CVSorder(@RequestParam("storeId") String storeId) throws SQLException {
+    public ArrayList<OrderForm> CVSOrder(@RequestParam("storeId") String storeId) throws SQLException {
         return ownerService.findOrder(storeId);
+    }
+
+    @GetMapping("/myCVS/topProduct")
+    public ArrayList<TopProductForm> topProduct(@RequestParam("storeId") String storeId) throws SQLException {
+        return ownerService.topProduct(storeId);
     }
 }

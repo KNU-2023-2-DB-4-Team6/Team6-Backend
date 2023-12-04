@@ -12,7 +12,7 @@ import java.util.ArrayList;
 @Slf4j
 public class FavoriteRepository {
     public String save(FavoriteForm favoriteForm) throws SQLException {
-        String sql = "insert into FAVORITE(ClientId, StoreId, ProductId) values (?, ?, ?)";
+        String sql = "insert into FAVORITE(CLIENT_ID, STORE_ID, PRODUCT_ID) values (?, ?, ?)";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -34,7 +34,7 @@ public class FavoriteRepository {
     }
 
     public void delete(FavoriteForm favoriteForm) throws SQLException {
-        String sql = "delete from FAVORITE where CLIENT_ID = ?, STORE_ID = ?, PRODUCT_ID = ?";
+        String sql = "delete from FAVORITE where CLIENT_ID = ? AND STORE_ID = ? AND PRODUCT_ID = ?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -54,8 +54,8 @@ public class FavoriteRepository {
         }
     }
 
-    public Boolean isUniqueFavorite(FavoriteForm favoriteForm) throws SQLException {
-        String sql = "select * from FAVORITE where CLIENT_ID = ?, STORE_ID = ?, PRODUCT_ID = ?";
+    public Boolean isFavorite(String clientId, String storeId, String productId) throws SQLException {
+        String sql = "select * from FAVORITE where CLIENT_ID = ? AND STORE_ID = ? AND PRODUCT_ID = ?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -64,15 +64,15 @@ public class FavoriteRepository {
         try{
             con = getConnection();
             pstmt = con.prepareStatement(sql);
-            pstmt.setString(1, favoriteForm.getClientId());
-            pstmt.setString(2, favoriteForm.getStoreId());
-            pstmt.setString(3, favoriteForm.getProductId());
+            pstmt.setString(1, clientId);
+            pstmt.setString(2, storeId);
+            pstmt.setString(3, productId);
             rs = pstmt.executeQuery();
             if (rs.next()){
                 return true;
-            }else{
-                return false;
             }
+            return false;
+
         }catch (SQLException e){
             throw e;
         }finally {

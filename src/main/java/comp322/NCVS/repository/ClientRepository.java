@@ -11,7 +11,7 @@ import java.sql.*;
 @Slf4j
 public class ClientRepository {
     public String save(String Client_Id, LoginForm loginForm) throws SQLException {
-        String sql = "insert into CLIENT(Client_Id, id, passward, LOCATION_X, LOCATION_Y) values (?, ?, ?, ? ,?)";
+        String sql = "insert into CLIENT(Client_Id, ID, PASSWARD, LOCATION_X, LOCATION_Y) values (?, ?, ?, ? ,?)";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -47,7 +47,33 @@ public class ClientRepository {
             pstmt.setString(1, id);
             rs = pstmt.executeQuery();
             if (rs.next()){
-                return rs.getString("passward");
+                return rs.getString("PASSWARD");
+            }else{
+                return null;
+            }
+        }catch (SQLException e){
+            throw e;
+        }finally {
+
+            close(con, pstmt, rs);
+        }
+    }
+
+
+    public String findKeyIdById(String id) throws SQLException {
+        String sql = "select * from CLIENT where id = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, id);
+            rs = pstmt.executeQuery();
+            if (rs.next()){
+                return rs.getString("CLIENT_ID");
             }else{
                 return null;
             }

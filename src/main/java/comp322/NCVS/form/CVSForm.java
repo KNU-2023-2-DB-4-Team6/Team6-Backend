@@ -11,12 +11,14 @@ public class CVSForm {
     private String OwnerId;
     private Double loc_x;
     private Double loc_y;
+    private String Image_Url;
+    private int revenue;
 
     public CVSForm(){
 
     }
 
-    public CVSForm(String storeId, String NAME, String address, String phoneNumber, String ownerId, Double loc_x, Double loc_y) {
+    public CVSForm(String storeId, String NAME, String address, String phoneNumber, String ownerId, Double loc_x, Double loc_y, String image_Url, int revenue) {
         StoreId = storeId;
         this.NAME = NAME;
         Address = address;
@@ -24,5 +26,7 @@ public class CVSForm {
         OwnerId = ownerId;
         this.loc_x = loc_x;
         this.loc_y = loc_y;
+        Image_Url = image_Url;
+        this.revenue = revenue;
     }
 }

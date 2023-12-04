@@ -18,18 +18,23 @@ public class LoginService {
     private final OwnerRepository ownerRepository;
 
     public String login(LoginForm loginForm) throws SQLException {
+        String findKeyId = null;
         String findPassword = null;
         if (loginForm.getState().equals("client")){
             findPassword = clientRepository.findPasswordById(loginForm.getId());
+            findKeyId = clientRepository.findKeyIdById(loginForm.getId());
+
         } else if (loginForm.getState().equals("owner")) {
             findPassword = ownerRepository.findPasswordById(loginForm.getId());
+            findKeyId = ownerRepository.findKeyIdById(loginForm.getId());
+
         }
         if (findPassword == null){
             log.info("Id Not Exist Id : " + loginForm.getId());
             return "id incorrect";
         }else if(findPassword.equals(loginForm.getPassword())){
             log.info("login by Id : " + loginForm.getId());
-            return "success";
+            return findKeyId;
         }else{
             log.info("password Not correct Id : " + loginForm.getId());
             return "password incorrect";
@@ -69,5 +74,4 @@ public class LoginService {
         }
         return s;
     }
-
 }
