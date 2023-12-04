@@ -69,17 +69,23 @@ public class StoreService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public String buy(BuyForm buyForm) throws SQLException {
-        int newQuantity = hasRepository.isPurchasable(buyForm);
-        log.info("newQuantity : " + newQuantity + " buyQuantity : " + buyForm.getQuantity());
-        log.info("ProductId : " + buyForm.getProductId() + "StoreId : " + buyForm.getStoreId());
-        if (newQuantity >= 0){
-            hasRepository.updateBuy(newQuantity, buyForm);
-            paymentRepository.save(makeRandomId(), buyForm);
-            log.info("buy successful");
-            return "success";
-        }else{
-            log.info("buy error");
-            return "error";
+        try{
+            int newQuantity = hasRepository.isPurchasable(buyForm);
+            log.info("newQuantity : " + newQuantity + " buyQuantity : " + buyForm.getQuantity());
+            log.info("ProductId : " + buyForm.getProductId() + "StoreId : " + buyForm.getStoreId());
+            if (newQuantity >= 0){
+                hasRepository.updateBuy(newQuantity, buyForm);
+                paymentRepository.save(makeRandomId(), buyForm);
+                log.info("buy successful");
+                return "success";
+            }
+            else{
+                log.info("Insufficient quantity");
+                throw new RuntimeException("Purchase not possible");
+            }
+        }catch (Exception e){
+            log.info("Exception during buy");
+            throw new RuntimeException("Buy process fail", e);
         }
     }
 
